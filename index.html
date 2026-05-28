@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Farol Capital — Onboarding</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ── CONFIGURAR AQUI ── */
+/* Senha de acesso — altere para a senha que preferir */
+/* A senha está na variável ACCESS_PASSWORD no script abaixo */
+
+:root{
+  --navy:#0B1F3A;--navy2:#132840;--blue:#1A5FA8;--blue2:#2272C3;
+  --accent:#F0A500;--green:#1A9E6E;--green2:#E6F7F2;
+  --amber:#E07B00;--amber2:#FEF3DC;
+  --red:#C0392B;--red2:#FDECEA;
+  --purple:#5B3FA6;--purple2:#EDE9FF;
+  --ink:#0D1B2A;--ink2:#3A4A5C;--muted:#7A8A9A;
+  --line:#E2E8F0;--bg:#F5F7FA;--card:#FFFFFF;
+  --font:'Sora',sans-serif;--mono:'JetBrains Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--ink);min-height:100vh;font-size:14px;line-height:1.5}
+
+/* LOGIN */
+.login-screen{display:none;position:fixed;inset:0;background:var(--navy);z-index:1000;align-items:center;justify-content:center;flex-direction:column;gap:0}
+.login-screen.show{display:flex}
+.login-box{background:var(--card);border-radius:16px;padding:2.5rem;width:100%;max-width:380px;box-shadow:0 24px 80px rgba(0,0,0,.35)}
+.login-logo{display:flex;align-items:center;gap:12px;margin-bottom:2rem;justify-content:center}
+.login-dot{width:40px;height:40px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center}
+.login-dot svg{width:22px;height:22px;fill:none;stroke:var(--navy);stroke-width:2}
+.login-brand{font-size:18px;font-weight:600;color:var(--ink)}
+.login-brand span{color:var(--blue)}
+.login-title{font-size:14px;color:var(--muted);text-align:center;margin-bottom:1.75rem}
+.login-field{margin-bottom:14px}
+.login-field label{display:block;font-size:12px;font-weight:500;color:var(--ink2);margin-bottom:5px}
+.login-field input{width:100%;font-family:var(--font);font-size:14px;padding:11px 14px;border-radius:8px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);outline:none;transition:border .15s}
+.login-field input:focus{border-color:var(--blue2);background:#fff}
+.login-btn{width:100%;padding:12px;background:var(--accent);color:var(--navy);border:none;border-radius:8px;font-family:var(--font);font-size:14px;font-weight:600;cursor:pointer;margin-top:4px;transition:background .15s}
+.login-btn:hover{background:#FFB820}
+.login-error{font-size:12px;color:var(--red);text-align:center;margin-top:10px;min-height:18px}
+
+/* TOPBAR */
+.topbar{background:var(--navy);padding:0 2rem;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;box-shadow:0 2px 12px rgba(0,0,0,.18)}
+.topbar-brand{display:flex;align-items:center;gap:12px}
+.brand-dot{width:28px;height:28px;background:var(--accent);border-radius:6px;display:flex;align-items:center;justify-content:center}
+.brand-dot svg{width:16px;height:16px;fill:none;stroke:var(--navy);stroke-width:2}
+.brand-name{font-size:15px;font-weight:600;color:#fff;letter-spacing:.02em}
+.brand-name span{color:var(--accent)}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:7px;font-family:var(--font);font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .15s}
+.btn-accent{background:var(--accent);color:var(--navy)}
+.btn-accent:hover{background:#FFB820}
+.btn-ghost{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.15)}
+.btn-ghost:hover{background:rgba(255,255,255,.18)}
+.btn-outline{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.btn-outline:hover{background:var(--bg)}
+.btn-danger{background:var(--red2);color:var(--red);border:1px solid #f5c6c2}
+.btn-danger:hover{background:#fad4d1}
+.btn-green{background:var(--green2);color:var(--green);border:1px solid #7ED3B8}
+.btn-green:hover{background:#d0f0e7}
+.btn-pdf{background:#fff;color:var(--red);border:1px solid #f5c6c2}
+.btn-pdf:hover{background:var(--red2)}
+
+/* LAYOUT */
+.layout{display:flex;min-height:calc(100vh - 56px)}
+.sidebar{width:220px;min-width:220px;background:var(--navy2);padding:1.5rem 0;display:flex;flex-direction:column;gap:4px}
+.sidebar-section{font-size:10px;font-weight:600;letter-spacing:.1em;color:rgba(255,255,255,.3);padding:0 1.25rem;margin:12px 0 4px;text-transform:uppercase}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 1.25rem;color:rgba(255,255,255,.55);cursor:pointer;font-size:13px;transition:all .12s;border-left:3px solid transparent}
+.nav-item:hover{color:#fff;background:rgba(255,255,255,.06)}
+.nav-item.active{color:#fff;background:rgba(255,255,255,.1);border-left-color:var(--accent)}
+.nav-icon{width:18px;height:18px;flex-shrink:0;opacity:.7}
+.nav-item.active .nav-icon{opacity:1}
+.nav-badge{margin-left:auto;background:var(--accent);color:var(--navy);font-size:10px;font-weight:700;padding:1px 6px;border-radius:20px}
+.main{flex:1;padding:2rem;overflow-x:hidden}
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:12px}
+.page-title{font-size:20px;font-weight:600;color:var(--ink)}
+.page-sub{font-size:13px;color:var(--muted);margin-top:2px}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:1.75rem}
+.metric-card{background:var(--card);border-radius:10px;border:1px solid var(--line);padding:14px 16px}
+.metric-label{font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;margin-bottom:6px}
+.metric-val{font-size:28px;font-weight:600;line-height:1}
+.metric-val.green{color:var(--green)}
+.metric-val.amber{color:var(--amber)}
+.metric-val.muted{color:var(--muted)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.25rem}
+.filters input,.filters select{font-family:var(--font);font-size:13px;padding:7px 12px;border-radius:7px;border:1px solid var(--line);background:var(--card);color:var(--ink);outline:none}
+.filters input{flex:1;min-width:180px}
+.filters input:focus,.filters select:focus{border-color:var(--blue2)}
+.cards-list{display:flex;flex-direction:column;gap:10px}
+.p-card{background:var(--card);border-radius:10px;border:1px solid var(--line);overflow:hidden;transition:box-shadow .15s}
+.p-card:hover{box-shadow:0 2px 12px rgba(0,0,0,.07)}
+.p-card-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;gap:12px;user-select:none}
+.p-card-left{display:flex;align-items:center;gap:12px;flex:1;min-width:0}
+.avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0}
+.av-assessor{background:#EDE9FF;color:#5B3FA6}
+.av-estudos{background:#D6E8F7;color:#1A5FA8}
+.av-sdr{background:#FEF3DC;color:#E07B00}
+.av-produtos{background:#E6F7F2;color:#1A9E6E}
+.p-name{font-size:14px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.p-sub{font-size:12px;color:var(--muted);margin-top:1px}
+.p-card-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.progress-wrap{display:flex;align-items:center;gap:7px}
+.progress-bar{width:70px;height:5px;background:var(--line);border-radius:99px;overflow:hidden}
+.progress-fill{height:100%;border-radius:99px;background:var(--green);transition:width .3s}
+.progress-fill.warn{background:var(--amber)}
+.progress-pct{font-size:11px;color:var(--muted);font-family:var(--mono);min-width:30px}
+.badge{display:inline-block;font-size:11px;font-weight:500;padding:3px 9px;border-radius:99px;white-space:nowrap}
+.badge-assessor{background:#EDE9FF;color:#5B3FA6}
+.badge-estudos{background:#D6E8F7;color:#1A5FA8}
+.badge-sdr{background:#FEF3DC;color:#E07B00}
+.badge-produtos{background:#E6F7F2;color:#1A9E6E}
+.badge-ok{background:#E6F7F2;color:#1A9E6E}
+.badge-pend{background:#FEF3DC;color:#E07B00}
+.badge-inativo{background:var(--bg);color:var(--muted)}
+.chevron{width:16px;height:16px;color:var(--muted);transition:transform .2s;flex-shrink:0}
+.chevron.open{transform:rotate(180deg)}
+.p-card-body{display:none;border-top:1px solid var(--line);padding:16px}
+.p-card-body.open{display:block}
+.frentes{display:flex;flex-direction:column;gap:12px}
+.frente{border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.frente-hdr{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;background:var(--bg)}
+.frente-hdr-left{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--ink2)}
+.frente-count{font-size:11px;color:var(--muted);font-family:var(--mono)}
+.frente-locked{display:flex;align-items:center;gap:8px;padding:12px 14px;font-size:12px;color:var(--muted)}
+.frente-unlock-wrap{padding:8px 14px;border-top:1px solid var(--line)}
+.doc-row{padding:10px 14px;border-top:1px solid var(--line)}
+.doc-name{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:8px}
+.doc-steps{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.step-btn{display:inline-flex;align-items:center;gap:5px;font-family:var(--font);font-size:11px;font-weight:500;padding:5px 11px;border-radius:6px;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--muted);transition:all .12s}
+.step-btn:hover{border-color:#bbb;color:var(--ink)}
+.step-btn.s-enviado{background:#D6E8F7;border-color:#8BB8E0;color:#1A5FA8}
+.step-btn.s-assinado{background:#E6F7F2;border-color:#7ED3B8;color:#1A9E6E}
+.step-arrow{color:var(--muted);font-size:12px}
+.task-row{display:flex;align-items:center;gap:10px;padding:9px 14px;border-top:1px solid var(--line);cursor:pointer;transition:background .1s}
+.task-row:hover{background:var(--bg)}
+.task-check{width:18px;height:18px;border-radius:4px;border:1.5px solid #C8D5E0;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .12s}
+.task-check.done{background:var(--green);border-color:var(--green)}
+.task-label{font-size:13px;color:var(--ink);flex:1}
+.task-label.done{color:var(--muted);text-decoration:line-through}
+.p-card-footer{display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:12px;border-top:1px solid var(--line);flex-wrap:wrap;gap:8px}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(10,20,35,.5);backdrop-filter:blur(2px);z-index:200;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:var(--card);border-radius:12px;border:1px solid var(--line);padding:1.75rem;width:100%;max-width:460px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.18)}
+.modal h2{font-size:17px;font-weight:600;margin-bottom:1.25rem;color:var(--ink)}
+.form-row{margin-bottom:14px}
+.form-row label{display:block;font-size:12px;font-weight:500;color:var(--ink2);margin-bottom:5px}
+.form-row input,.form-row select,.form-row textarea{width:100%;font-family:var(--font);font-size:13px;padding:9px 12px;border-radius:7px;border:1px solid var(--line);background:var(--bg);color:var(--ink);outline:none}
+.form-row input:focus,.form-row select:focus{border-color:var(--blue2);background:#fff}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--line)}
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--navy);color:#fff;font-size:13px;padding:10px 16px;border-radius:8px;box-shadow:0 6px 24px rgba(0,0,0,.2);transform:translateY(20px);opacity:0;transition:all .25s;pointer-events:none;z-index:999}
+.toast.show{transform:translateY(0);opacity:1}
+.empty{text-align:center;padding:3rem;color:var(--muted);font-size:13px}
+.view{display:none}
+.view.active{display:block}
+.save-dot{width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block}
+.db-status{display:flex;align-items:center;gap:6px;font-size:12px;color:rgba(255,255,255,.5)}
+
+/* LOADING OVERLAY */
+.loading-overlay{display:none;position:fixed;inset:0;background:rgba(255,255,255,.7);z-index:500;align-items:center;justify-content:center;flex-direction:column;gap:12px}
+.loading-overlay.show{display:flex}
+.spinner{width:36px;height:36px;border:3px solid var(--line);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* SUPABASE CONFIG BANNER */
+.config-banner{background:#FEF3DC;border:1px solid #FAC775;border-radius:10px;padding:14px 18px;margin-bottom:1.5rem;font-size:13px;color:#633806;display:none}
+.config-banner.show{display:block}
+.config-banner strong{display:block;margin-bottom:4px;font-size:14px}
+.config-banner code{background:rgba(0,0,0,.08);padding:1px 6px;border-radius:4px;font-family:var(--mono);font-size:12px}
+
+/* PRINT / PDF */
+@media print {
+  .topbar,.sidebar,.filters,.p-card-footer,.btn,.modal-bg,.toast,.login-screen,.loading-overlay{display:none!important}
+  .layout{display:block}
+  .main{padding:0}
+  .p-card{break-inside:avoid;margin-bottom:12px;box-shadow:none;border:1px solid #ccc}
+  .p-card-body{display:block!important}
+  body{background:#fff}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-screen show" id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-dot">
+        <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      </div>
+      <div class="login-brand"><span>Farol</span> Capital</div>
+    </div>
+    <div class="login-title">Sistema de Onboarding — acesso restrito</div>
+    <div class="login-field">
+      <label>Senha de acesso</label>
+      <input type="password" id="loginPwd" placeholder="Digite a senha" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="login-btn" onclick="doLogin()">Entrar</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <span style="font-size:13px;color:var(--ink2)">Carregando dados…</span>
+</div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-brand">
+    <div class="brand-dot">
+      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    </div>
+    <div class="brand-name"><span>Farol</span> Capital — Onboarding</div>
+  </div>
+  <div class="topbar-right">
+    <div class="db-status">
+      <span class="save-dot" id="saveDot"></span>
+      <span id="saveText">Conectando…</span>
+    </div>
+    <button class="btn btn-pdf" onclick="exportPDF()">📄 Exportar PDF</button>
+    <button class="btn btn-ghost" onclick="doLogout()">Sair</button>
+  </div>
+</div>
+
+<div class="layout">
+  <div class="sidebar">
+    <div class="sidebar-section">Navegação</div>
+    <div class="nav-item active" id="nav-profissionais" onclick="showView('profissionais')">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+      Profissionais
+      <span class="nav-badge" id="navBadge" style="display:none">0</span>
+    </div>
+    <div class="nav-item" id="nav-contratos" onclick="showView('contratos')">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      Contratos
+    </div>
+    <div class="nav-item" id="nav-ancord" onclick="showView('ancord')">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+      Ancord & XP
+    </div>
+    <div class="sidebar-section" style="margin-top:16px">Sistema</div>
+    <div class="nav-item" id="nav-instrucoes" onclick="showView('instrucoes')">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+      Instruções
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- PROFISSIONAIS -->
+    <div class="view active" id="view-profissionais">
+      <div class="config-banner" id="configBanner">
+        <strong>⚙️ Configure o Supabase para salvar na nuvem</strong>
+        Abra o arquivo HTML num editor de texto, encontre <code>SUPABASE_URL</code> e <code>SUPABASE_KEY</code> e substitua pelos valores do seu projeto. Enquanto isso, os dados ficam salvos apenas neste navegador.
+      </div>
+      <div class="page-header">
+        <div>
+          <div class="page-title">Profissionais</div>
+          <div class="page-sub">Acompanhe o onboarding de cada profissional</div>
+        </div>
+        <button class="btn btn-accent" onclick="openAdd()">+ Novo profissional</button>
+      </div>
+      <div class="metrics" id="metrics"></div>
+      <div class="filters">
+        <input type="text" id="search" placeholder="Buscar por nome…" oninput="renderProfissionais()">
+        <select id="filtPerfil" onchange="renderProfissionais()">
+          <option value="">Todos os perfis</option>
+          <option value="assessor">Assessor Comercial</option>
+          <option value="estudos">Assessor em Estudos</option>
+          <option value="sdr">SDR</option>
+          <option value="produtos">Só Produtos</option>
+        </select>
+        <select id="filtStatus" onchange="renderProfissionais()">
+          <option value="">Todos os status</option>
+          <option value="ok">Concluído</option>
+          <option value="pend">Com pendência</option>
+          <option value="inativo">Inativo</option>
+        </select>
+      </div>
+      <div class="cards-list" id="cardsList"></div>
+    </div>
+
+    <!-- CONTRATOS -->
+    <div class="view" id="view-contratos">
+      <div class="page-header">
+        <div><div class="page-title">Contratos & Certisign</div><div class="page-sub">Visão consolidada de todos os documentos</div></div>
+        <button class="btn btn-pdf" onclick="exportPDF()">📄 Exportar PDF</button>
+      </div>
+      <div id="contratosContent"></div>
+    </div>
+
+    <!-- ANCORD -->
+    <div class="view" id="view-ancord">
+      <div class="page-header">
+        <div><div class="page-title">Ancord & XP</div><div class="page-sub">Etapas pós-prova — Assessores Comerciais</div></div>
+      </div>
+      <div id="ancordContent"></div>
+    </div>
+
+    <!-- INSTRUCOES -->
+    <div class="view" id="view-instrucoes">
+      <div class="page-header"><div><div class="page-title">Como usar</div></div></div>
+      <div style="max-width:640px;display:flex;flex-direction:column;gap:16px">
+
+        <div style="background:var(--card);border:1px solid var(--line);border-radius:10px;padding:20px">
+          <div style="font-weight:600;margin-bottom:12px;font-size:15px">⚙️ Configurar Supabase (banco na nuvem)</div>
+          <ol style="padding-left:18px;display:flex;flex-direction:column;gap:10px;font-size:13px;color:var(--ink2)">
+            <li>Acesse <strong>supabase.com</strong> e crie uma conta gratuita</li>
+            <li>Crie um novo projeto (escolha qualquer nome e região)</li>
+            <li>No painel do projeto, vá em <strong>Settings → API</strong></li>
+            <li>Copie a <strong>Project URL</strong> e a <strong>anon public key</strong></li>
+            <li>Abra este arquivo HTML num editor de texto (Bloco de Notas ou VS Code)</li>
+            <li>Encontre as linhas <code>SUPABASE_URL</code> e <code>SUPABASE_KEY</code> e substitua pelos valores copiados</li>
+            <li>No Supabase, vá em <strong>Table Editor → New Table</strong>, crie uma tabela chamada <code>onboarding</code> com apenas uma coluna extra: <code>data</code> do tipo <code>text</code></li>
+            <li>Em <strong>Authentication → Policies</strong>, habilite acesso público (anon) para leitura e escrita na tabela</li>
+            <li>Salve o arquivo HTML e hospede no GitHub Pages</li>
+          </ol>
+        </div>
+
+        <div style="background:var(--card);border:1px solid var(--line);border-radius:10px;padding:20px">
+          <div style="font-weight:600;margin-bottom:10px">📋 Fluxo de onboarding</div>
+          <ol style="padding-left:18px;display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--ink2)">
+            <li>Cadastre o profissional e selecione o perfil correto</li>
+            <li>Em <strong>Contratos</strong>, avance cada documento: <em>Pendente → Enviado ao Certisign → Assinado</em></li>
+            <li>Para Assessores Comerciais, após aprovação na prova, clique em <strong>Desbloquear</strong> para liberar Ancord e XP</li>
+          </ol>
+        </div>
+
+        <div style="background:var(--card);border:1px solid var(--line);border-radius:10px;padding:20px">
+          <div style="font-weight:600;margin-bottom:10px">📂 Documentos por perfil</div>
+          <div style="display:flex;flex-direction:column;gap:10px;font-size:13px">
+            <div><span class="badge badge-assessor" style="margin-right:8px">Assessor Comercial</span>CVC · Procuração FCI (Clauber) · Procuração FCI (Juliano) · AGS · Termo de repasse</div>
+            <div><span class="badge badge-estudos" style="margin-right:8px">Assessor em Estudos</span>Contrato de Estudos</div>
+            <div><span class="badge badge-sdr" style="margin-right:8px">SDR</span>Contrato de Prestação de Serviços</div>
+            <div><span class="badge badge-produtos" style="margin-right:8px">Só Produtos</span>Termo de repasse de demais produtos</div>
+          </div>
+        </div>
+
+        <div style="background:var(--card);border:1px solid var(--line);border-radius:10px;padding:20px">
+          <div style="font-weight:600;margin-bottom:8px">🔑 Alterar senha de acesso</div>
+          <div style="font-size:13px;color:var(--ink2)">Abra o arquivo HTML num editor de texto, encontre <code style="background:var(--bg);padding:1px 5px;border-radius:4px">ACCESS_PASSWORD</code> e troque o valor pela senha desejada.</div>
+        </div>
+
+        <div style="background:var(--card);border:1px solid var(--line);border-radius:10px;padding:20px">
+          <div style="font-weight:600;margin-bottom:8px">📄 Exportar PDF</div>
+          <div style="font-size:13px;color:var(--ink2)">O botão <strong>Exportar PDF</strong> abre o diálogo de impressão do navegador. Escolha <em>"Salvar como PDF"</em> na impressora para gerar o arquivo. O relatório inclui todos os profissionais e seus status.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="addModal">
+  <div class="modal">
+    <h2>Novo profissional</h2>
+    <div class="form-row"><label>Nome completo</label><input type="text" id="fNome" placeholder="Ex: João da Silva"></div>
+    <div class="form-grid">
+      <div class="form-row"><label>Perfil</label>
+        <select id="fPerfil">
+          <option value="assessor">Assessor Comercial</option>
+          <option value="estudos">Assessor em Estudos</option>
+          <option value="sdr">SDR</option>
+          <option value="produtos">Só Produtos</option>
+        </select>
+      </div>
+      <div class="form-row"><label>Data de entrada</label><input type="date" id="fData"></div>
+    </div>
+    <div class="form-row"><label>Observações (opcional)</label><textarea id="fObs" rows="2" placeholder="Ex: Indicado por Carlos"></textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeAdd()">Cancelar</button>
+      <button class="btn btn-accent" onclick="addPerson()">Adicionar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ════════════════════════════════════════════════════════════════
+// CONFIGURAÇÕES — edite estas duas linhas com seus dados Supabase
+// ════════════════════════════════════════════════════════════════
+const SUPABASE_URL = "https://xvlikbawifeglchsmcac.supabase.co";        // ex: https://xyzxyz.supabase.co
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh2bGlrYmF3aWZlZ2xjaHNtY2FjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5OTAyMDIsImV4cCI6MjA5NTU2NjIwMn0.wQtQ3jBwoFuZrZhL_1R99Jbq14HnAD6xMD4YcZQ4-zY";   // chave anon/public do projeto
+const ACCESS_PASSWORD = "farol2024";              // ← ALTERE ESTA SENHA
+// ════════════════════════════════════════════════════════════════
+
+const SUPABASE_CONFIGURED = SUPABASE_URL !== "https://xvlikbawifeglchsmcac.supabase.co";
+const SK_LOCAL = "farol_onboarding_v3";
+const ROW_ID   = 1; // usamos sempre a linha 1 para armazenar o JSON completo
+
+// ─── DEFINIÇÕES ────────────────────────────────────────────────
+const PERFIL_LABEL = {assessor:"Assessor Comercial",estudos:"Assessor em Estudos",sdr:"SDR",produtos:"Só Produtos"};
+const PERFIL_AV    = {assessor:"av-assessor",estudos:"av-estudos",sdr:"av-sdr",produtos:"av-produtos"};
+const PERFIL_BADGE = {assessor:"badge-assessor",estudos:"badge-estudos",sdr:"badge-sdr",produtos:"badge-produtos"};
+const DOC_STATES   = ["pendente","enviado","assinado"];
+
+const FRENTES_DEF = {
+  assessor:[
+    {id:"docs",  label:"Documentação", type:"docs",  locked:false, items:[
+      "CVC — Compra e venda de participação societária",
+      "Procuração FCI (Clauber Marcelo Gomes)",
+      "Procuração FCI (Juliano Benedito Pires de Borba)",
+      "AGS — Termo de adesão ao acordo geral Farol",
+      "Termo de repasse de demais produtos"
+    ]},
+    {id:"ancord",label:"Ancord", type:"tasks", locked:true, lockMsg:"Disponível após aprovação na prova Ancord", items:[
+      "Receber certificação do assessor",
+      "Cadastrar certificação na Farol Capital",
+      "Gestor realiza inclusão no organismo Farol na Ancord"
+    ]},
+    {id:"xp",    label:"XP",     type:"tasks", locked:true, lockMsg:"Disponível após aprovação na prova Ancord", items:[
+      "Enviar certificação para a XP",
+      "Aguardar alteração do contrato social (novo sócio)",
+      "Enviar contrato social atualizado para a XP"
+    ]}
+  ],
+  estudos: [{id:"docs",label:"Documentação",type:"docs",locked:false,items:["Contrato de Estudos"]}],
+  sdr:     [{id:"docs",label:"Documentação",type:"docs",locked:false,items:["Contrato de Prestação de Serviços"]}],
+  produtos:[{id:"docs",label:"Documentação",type:"docs",locked:false,items:["Termo de repasse de demais produtos"]}]
+};
+
+function makeTasks(perfil) {
+  const r={};
+  FRENTES_DEF[perfil].forEach(f=>{
+    if(f.type==="docs"){r[f.id]={locked:f.locked,docs:{}}; f.items.forEach(i=>r[f.id].docs[i]="pendente");}
+    else{r[f.id]={locked:f.locked,done:{}}; f.items.forEach(i=>r[f.id].done[i]=false);}
+  });
+  return r;
+}
+
+// ─── SUPABASE ──────────────────────────────────────────────────
+async function sbFetch(path, options={}) {
+  const res = await fetch(SUPABASE_URL + "/rest/v1/" + path, {
+    ...options,
+    headers: {
+      "apikey": SUPABASE_KEY,
+      "Authorization": "Bearer " + SUPABASE_KEY,
+      "Content-Type": "application/json",
+      "Prefer": options.prefer || "",
+      ...(options.headers||{})
+    }
+  });
+  if(!res.ok) throw new Error(await res.text());
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
+}
+
+async function loadFromSupabase() {
+  const rows = await sbFetch(`onboarding?id=eq.${ROW_ID}&select=data`);
+  if(rows && rows.length > 0) {
+    const d = JSON.parse(rows[0].data);
+    pessoas = d.pessoas || [];
+    nextId  = d.nextId  || 10;
+    return true;
+  }
+  // Linha ainda não existe — cria
+  await sbFetch("onboarding", {
+    method:"POST",
+    prefer:"return=minimal",
+    body: JSON.stringify({id: ROW_ID, data: JSON.stringify({pessoas: defaultData(), nextId:10})})
+  });
+  pessoas = defaultData(); nextId=10;
+  return true;
+}
+
+async function saveToSupabase() {
+  setSaveDot("saving");
+  clearTimeout(window._st);
+  window._st = setTimeout(async ()=>{
+    const payload = JSON.stringify({pessoas, nextId});
+    try {
+      if(SUPABASE_CONFIGURED) {
+        await sbFetch(`onboarding?id=eq.${ROW_ID}`, {
+          method:"PATCH",
+          prefer:"return=minimal",
+          body: JSON.stringify({data: payload})
+        });
+      }
+      // Always save locally too as fallback
+      localStorage.setItem(SK_LOCAL, payload);
+      setSaveDot("saved");
+    } catch(e) {
+      console.error(e);
+      localStorage.setItem(SK_LOCAL, payload);
+      setSaveDot("error");
+    }
+  }, 500);
+}
+
+// ─── LOCAL FALLBACK ────────────────────────────────────────────
+function loadLocal() {
+  try { const r=localStorage.getItem(SK_LOCAL); if(r){const d=JSON.parse(r);pessoas=d.pessoas||defaultData();nextId=d.nextId||10;return;} } catch(e){}
+  pessoas=defaultData(); nextId=10;
+}
+
+function setSaveDot(s) {
+  const d=document.getElementById("saveDot"), t=document.getElementById("saveText");
+  const labels={saving:["var(--amber)","Salvando…"],saved:["var(--green)",SUPABASE_CONFIGURED?"Salvo na nuvem ☁":"Salvo localmente"],error:["var(--red)","Erro ao salvar"]};
+  const [color,text]=labels[s]||labels.saved;
+  d.style.background=color; t.textContent=text;
+}
+
+function defaultData() {
+  return [
+    {id:1,nome:"Carlos Mendonça",perfil:"assessor",entrada:"2025-03-10",ativo:true,obs:"Exemplo",tasks:{
+      docs:{locked:false,docs:{"CVC — Compra e venda de participação societária":"assinado","Procuração FCI (Clauber Marcelo Gomes)":"assinado","Procuração FCI (Juliano Benedito Pires de Borba)":"enviado","AGS — Termo de adesão ao acordo geral Farol":"assinado","Termo de repasse de demais produtos":"assinado"}},
+      ancord:{locked:false,done:{"Receber certificação do assessor":true,"Cadastrar certificação na Farol Capital":true,"Gestor realiza inclusão no organismo Farol na Ancord":false}},
+      xp:{locked:false,done:{"Enviar certificação para a XP":true,"Aguardar alteração do contrato social (novo sócio)":false,"Enviar contrato social atualizado para a XP":false}}
+    }},
+    {id:2,nome:"Fernanda Lima",perfil:"estudos",entrada:"2025-11-01",ativo:true,obs:"",tasks:{docs:{locked:false,docs:{"Contrato de Estudos":"enviado"}}}},
+    {id:3,nome:"Rafael Torres",perfil:"sdr",entrada:"2025-09-15",ativo:true,obs:"",tasks:{docs:{locked:false,docs:{"Contrato de Prestação de Serviços":"assinado"}}}},
+  ];
+}
+
+let pessoas=[], nextId=10, expanded={}, currentView="profissionais";
+
+// ─── LOGIN ─────────────────────────────────────────────────────
+function doLogin() {
+  const pwd=document.getElementById("loginPwd").value;
+  const err=document.getElementById("loginError");
+  if(pwd===ACCESS_PASSWORD){
+    sessionStorage.setItem("farol_auth","1");
+    document.getElementById("loginScreen").classList.remove("show");
+    initApp();
+  } else {
+    err.textContent="Senha incorreta. Tente novamente.";
+    document.getElementById("loginPwd").value="";
+    document.getElementById("loginPwd").focus();
+  }
+}
+function doLogout(){sessionStorage.removeItem("farol_auth");location.reload();}
+
+async function initApp() {
+  const banner=document.getElementById("configBanner");
+  if(!SUPABASE_CONFIGURED){
+    banner.classList.add("show");
+    loadLocal();
+    setSaveDot("saved");
+    renderProfissionais();
+    return;
+  }
+  document.getElementById("loadingOverlay").classList.add("show");
+  setSaveDot("saving");
+  try {
+    await loadFromSupabase();
+    setSaveDot("saved");
+  } catch(e){
+    console.error(e);
+    loadLocal();
+    setSaveDot("error");
+    showToast("Erro ao conectar ao Supabase. Usando dados locais.");
+  }
+  document.getElementById("loadingOverlay").classList.remove("show");
+  renderProfissionais();
+}
+
+// Verificar se já está logado
+if(sessionStorage.getItem("farol_auth")==="1"){
+  document.getElementById("loginScreen").classList.remove("show");
+  initApp();
+}
+
+// ─── HELPERS ───────────────────────────────────────────────────
+function initials(n){return n.trim().split(/\s+/).slice(0,2).map(w=>w[0].toUpperCase()).join("");}
+function fmtDate(d){if(!d)return"—";const[y,m,di]=d.split("-");return`${di}/${m}/${y.slice(2)}`;}
+
+function calcProgress(p){
+  let total=0,done=0;
+  FRENTES_DEF[p.perfil].forEach(f=>{
+    const ft=p.tasks[f.id]; if(!ft||ft.locked)return;
+    if(f.type==="docs")f.items.forEach(i=>{total++;if(ft.docs[i]==="assinado")done++;});
+    else f.items.forEach(i=>{total++;if(ft.done[i])done++;});
+  });
+  return total===0?100:Math.round(done/total*100);
+}
+function getStatus(p){if(!p.ativo)return"inativo";return calcProgress(p)===100?"ok":"pend";}
+function showToast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2800);}
+
+// ─── VIEW SWITCHING ────────────────────────────────────────────
+function showView(id){
+  currentView=id;
+  document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+  document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
+  document.getElementById("view-"+id).classList.add("active");
+  document.getElementById("nav-"+id).classList.add("active");
+  if(id==="contratos")renderContratos();
+  if(id==="ancord")renderAncord();
+}
+
+// ─── EXPORT PDF ────────────────────────────────────────────────
+function exportPDF(){
+  // Expand all cards before printing
+  Object.keys(expanded).forEach(k=>expanded[k]=true);
+  pessoas.forEach(p=>expanded[p.id]=true);
+  renderProfissionais();
+  setTimeout(()=>window.print(), 400);
+}
+
+// ─── RENDER METRICS ────────────────────────────────────────────
+function renderMetrics(){
+  const ativos=pessoas.filter(p=>p.ativo);
+  const pend=ativos.filter(p=>getStatus(p)==="pend").length;
+  const ok=ativos.filter(p=>getStatus(p)==="ok").length;
+  const nb=document.getElementById("navBadge");
+  nb.textContent=pend; nb.style.display=pend?"":"none";
+  document.getElementById("metrics").innerHTML=`
+    <div class="metric-card"><div class="metric-label">Ativos</div><div class="metric-val">${ativos.length}</div></div>
+    <div class="metric-card"><div class="metric-label">Concluídos</div><div class="metric-val green">${ok}</div></div>
+    <div class="metric-card"><div class="metric-label">Com pendência</div><div class="metric-val amber">${pend}</div></div>
+    <div class="metric-card"><div class="metric-label">Inativos</div><div class="metric-val muted">${pessoas.filter(p=>!p.ativo).length}</div></div>
+  `;
+}
+
+// ─── RENDER PROFISSIONAIS ──────────────────────────────────────
+function renderProfissionais(){
+  renderMetrics();
+  const q=(document.getElementById("search")||{}).value||"";
+  const fp=(document.getElementById("filtPerfil")||{}).value||"";
+  const fs=(document.getElementById("filtStatus")||{}).value||"";
+  const list=pessoas.filter(p=>{
+    if(q&&!p.nome.toLowerCase().includes(q.toLowerCase()))return false;
+    if(fp&&p.perfil!==fp)return false;
+    if(fs&&getStatus(p)!==fs)return false;
+    return true;
+  });
+  const container=document.getElementById("cardsList");
+  if(!list.length){container.innerHTML=`<div class="empty">Nenhum profissional encontrado.</div>`;return;}
+  container.innerHTML="";
+  list.forEach(p=>container.appendChild(buildCard(p)));
+}
+
+function buildCard(p){
+  const st=getStatus(p),pct=calcProgress(p),isOpen=!!expanded[p.id];
+  const card=document.createElement("div");
+  card.className="p-card"; card.dataset.pid=p.id;
+  const hdr=document.createElement("div");
+  hdr.className="p-card-header";
+  hdr.innerHTML=`
+    <div class="p-card-left">
+      <div class="avatar ${PERFIL_AV[p.perfil]}">${initials(p.nome)}</div>
+      <div><div class="p-name">${p.nome}</div><div class="p-sub">${PERFIL_LABEL[p.perfil]} · Entrada ${fmtDate(p.entrada)}${p.obs?" · "+p.obs:""}</div></div>
+    </div>
+    <div class="p-card-right">
+      <div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-fill${pct===100?"":" warn"}" style="width:${pct}%"></div></div>
+        <span class="progress-pct">${pct}%</span>
+      </div>
+      <span class="badge ${st==="ok"?"badge-ok":st==="pend"?"badge-pend":"badge-inativo"}">${st==="ok"?"Concluído":st==="pend"?"Pendente":"Inativo"}</span>
+      <span class="badge ${PERFIL_BADGE[p.perfil]}">${PERFIL_LABEL[p.perfil]}</span>
+      <svg class="chevron${isOpen?" open":""}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>`;
+  hdr.addEventListener("click",()=>{
+    expanded[p.id]=!expanded[p.id];
+    body.classList.toggle("open",!!expanded[p.id]);
+    card.querySelector(".chevron").classList.toggle("open",!!expanded[p.id]);
+  });
+  const body=document.createElement("div");
+  body.className="p-card-body"+(isOpen?" open":"");
+  const frentesDiv=document.createElement("div"); frentesDiv.className="frentes";
+  FRENTES_DEF[p.perfil].forEach(fDef=>{
+    const ft=p.tasks[fDef.id]; if(!ft)return;
+    frentesDiv.appendChild(buildFrente(p,fDef,ft));
+  });
+  body.appendChild(frentesDiv);
+  const footer=document.createElement("div"); footer.className="p-card-footer";
+  const leftBtns=document.createElement("div"); leftBtns.style.cssText="display:flex;gap:8px";
+  const bAtivo=document.createElement("button"); bAtivo.className="btn btn-outline"; bAtivo.style.cssText="font-size:12px;padding:5px 12px"; bAtivo.textContent=p.ativo?"Desativar":"Reativar";
+  bAtivo.addEventListener("click",()=>{p.ativo=!p.ativo;saveToSupabase();renderProfissionais();showToast(p.ativo?"Profissional reativado.":"Profissional desativado.");});
+  const bDel=document.createElement("button"); bDel.className="btn btn-danger"; bDel.style.cssText="font-size:12px;padding:5px 12px"; bDel.textContent="Excluir";
+  bDel.addEventListener("click",()=>{if(!confirm("Excluir este profissional?"))return;pessoas=pessoas.filter(x=>x.id!==p.id);saveToSupabase();renderProfissionais();showToast("Excluído.");});
+  leftBtns.appendChild(bAtivo); leftBtns.appendChild(bDel); footer.appendChild(leftBtns);
+  body.appendChild(footer); card.appendChild(hdr); card.appendChild(body);
+  return card;
+}
+
+function buildFrente(p,fDef,ft){
+  const div=document.createElement("div"); div.className="frente";
+  if(ft.locked){
+    div.innerHTML=`<div class="frente-hdr"><div class="frente-hdr-left" style="color:var(--muted)">🔒 ${fDef.label}</div></div><div class="frente-locked">ℹ ${fDef.lockMsg}</div>`;
+    const uw=document.createElement("div"); uw.className="frente-unlock-wrap";
+    const btn=document.createElement("button"); btn.className="btn btn-green"; btn.style.cssText="font-size:12px;padding:5px 12px"; btn.textContent="✓ Desbloquear — assessor passou na prova";
+    btn.addEventListener("click",e=>{e.stopPropagation();ft.locked=false;saveToSupabase();const nf=buildFrente(p,fDef,ft);div.parentNode.replaceChild(nf,div);refreshCardHeader(p);showToast("Frente desbloqueada!");});
+    uw.appendChild(btn); div.appendChild(uw); return div;
+  }
+  if(fDef.type==="docs"){
+    const dc=fDef.items.filter(i=>ft.docs[i]==="assinado").length;
+    div.innerHTML=`<div class="frente-hdr"><div class="frente-hdr-left">📄 ${fDef.label}</div><span class="frente-count">${dc}/${fDef.items.length} assinados</span></div>`;
+    fDef.items.forEach(item=>div.appendChild(buildDocRow(p,fDef,ft,item,div)));
+  } else {
+    const dc=fDef.items.filter(i=>ft.done[i]).length;
+    div.innerHTML=`<div class="frente-hdr"><div class="frente-hdr-left">${fDef.id==="ancord"?"🏅":"🏦"} ${fDef.label}</div><span class="frente-count">${dc}/${fDef.items.length}</span></div>`;
+    fDef.items.forEach(item=>div.appendChild(buildTaskRow(p,fDef,ft,item,div)));
+  }
+  return div;
+}
+
+function buildDocRow(p,fDef,ft,item,frenteEl){
+  const row=document.createElement("div"); row.className="doc-row";
+  const s=ft.docs[item];
+  row.innerHTML=`<div class="doc-name">${item}</div><div class="doc-steps"></div>`;
+  const steps=row.querySelector(".doc-steps");
+  const b1=document.createElement("button");
+  b1.className="step-btn"+(s==="enviado"||s==="assinado"?" s-enviado":"");
+  b1.textContent=(s==="pendente"?"→ Enviar ao Certisign":"→ Enviado ao Certisign");
+  b1.addEventListener("click",e=>{e.stopPropagation();
+    ft.docs[item]=ft.docs[item]==="pendente"?"enviado":ft.docs[item]==="assinado"?"pendente":"enviado";
+    saveToSupabase();refreshFrenteHeader(p,fDef,ft,frenteEl);row.parentNode.replaceChild(buildDocRow(p,fDef,ft,item,frenteEl),row);refreshCardHeader(p);
+  });
+  const arr=document.createElement("span"); arr.className="step-arrow"; arr.textContent="→";
+  const b2=document.createElement("button");
+  b2.className="step-btn"+(s==="assinado"?" s-assinado":"");
+  b2.textContent=(s==="assinado"?"✎ Assinado":"✎ Aguardando assinatura");
+  b2.addEventListener("click",e=>{e.stopPropagation();
+    ft.docs[item]=ft.docs[item]==="enviado"?"assinado":ft.docs[item]==="assinado"?"enviado":"assinado";
+    saveToSupabase();refreshFrenteHeader(p,fDef,ft,frenteEl);row.parentNode.replaceChild(buildDocRow(p,fDef,ft,item,frenteEl),row);refreshCardHeader(p);
+  });
+  steps.appendChild(b1); steps.appendChild(arr); steps.appendChild(b2);
+  return row;
+}
+
+function buildTaskRow(p,fDef,ft,item,frenteEl){
+  const row=document.createElement("div"); row.className="task-row";
+  const done=ft.done[item];
+  row.innerHTML=`<div class="task-check${done?" done":""}">${done?'<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>':''}</div><span class="task-label${done?" done":""}">${item}</span>`;
+  row.addEventListener("click",e=>{e.stopPropagation();ft.done[item]=!ft.done[item];saveToSupabase();refreshFrenteHeader(p,fDef,ft,frenteEl);row.parentNode.replaceChild(buildTaskRow(p,fDef,ft,item,frenteEl),row);refreshCardHeader(p);});
+  return row;
+}
+
+function refreshFrenteHeader(p,fDef,ft,frenteEl){
+  const counter=frenteEl.querySelector(".frente-count"); if(!counter)return;
+  if(fDef.type==="docs"){const d=fDef.items.filter(i=>ft.docs[i]==="assinado").length;counter.textContent=`${d}/${fDef.items.length} assinados`;}
+  else{const d=fDef.items.filter(i=>ft.done[i]).length;counter.textContent=`${d}/${fDef.items.length}`;}
+}
+
+function refreshCardHeader(p){
+  const card=document.querySelector(`.p-card[data-pid="${p.id}"]`); if(!card)return;
+  const pct=calcProgress(p),st=getStatus(p);
+  const fill=card.querySelector(".progress-fill"); if(fill){fill.style.width=pct+"%";fill.className="progress-fill"+(pct===100?"":" warn");}
+  const pctEl=card.querySelector(".progress-pct"); if(pctEl)pctEl.textContent=pct+"%";
+  const badges=card.querySelectorAll(".p-card-right .badge");
+  if(badges[0]){badges[0].className="badge "+(st==="ok"?"badge-ok":st==="pend"?"badge-pend":"badge-inativo");badges[0].textContent=st==="ok"?"Concluído":st==="pend"?"Pendente":"Inativo";}
+  renderMetrics();
+}
+
+// ─── CONTRATOS ─────────────────────────────────────────────────
+function renderContratos(){
+  const ativos=pessoas.filter(p=>p.ativo);
+  const container=document.getElementById("contratosContent");
+  if(!ativos.length){container.innerHTML=`<div class="empty">Nenhum profissional ativo.</div>`;return;}
+  const sc={pendente:{bg:"#FDECEA",color:"#C0392B",label:"Pendente"},enviado:{bg:"#D6E8F7",color:"#1A5FA8",label:"Enviado ao Certisign"},assinado:{bg:"#E6F7F2",color:"#1A9E6E",label:"Assinado"}};
+  container.innerHTML="";
+  ativos.forEach(p=>{
+    const fDef=FRENTES_DEF[p.perfil].find(f=>f.id==="docs"); if(!fDef)return;
+    const ft=p.tasks["docs"];
+    const wrap=document.createElement("div"); wrap.style.cssText="background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:16px";
+    const hdr=document.createElement("div"); hdr.style.cssText="display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--bg);border-bottom:1px solid var(--line)";
+    hdr.innerHTML=`<div class="avatar ${PERFIL_AV[p.perfil]}" style="width:30px;height:30px;font-size:11px">${initials(p.nome)}</div><strong style="font-size:14px">${p.nome}</strong><span class="badge ${PERFIL_BADGE[p.perfil]}">${PERFIL_LABEL[p.perfil]}</span>`;
+    wrap.appendChild(hdr);
+    const table=document.createElement("table"); table.style.cssText="width:100%;border-collapse:collapse;font-size:13px";
+    table.innerHTML=`<thead><tr style="background:var(--bg)"><th style="text-align:left;padding:8px 16px;font-size:11px;font-weight:600;color:var(--muted);border-bottom:1px solid var(--line)">DOCUMENTO</th><th style="text-align:center;padding:8px 16px;font-size:11px;font-weight:600;color:var(--muted);border-bottom:1px solid var(--line);width:200px">STATUS CERTISIGN</th><th style="text-align:center;padding:8px 16px;font-size:11px;font-weight:600;color:var(--muted);border-bottom:1px solid var(--line);width:120px">AÇÃO</th></tr></thead>`;
+    const tbody=document.createElement("tbody");
+    fDef.items.forEach(doc=>{
+      const s=ft.docs[doc],c=sc[s];
+      const tr=document.createElement("tr"); tr.style.borderBottom="1px solid var(--line)";
+      tr.innerHTML=`<td style="padding:10px 16px">${doc}</td><td style="padding:10px 16px;text-align:center"><span style="background:${c.bg};color:${c.color};font-size:11px;font-weight:500;padding:3px 10px;border-radius:99px">${c.label}</span></td><td style="padding:10px 16px;text-align:center"></td>`;
+      const btn=document.createElement("button"); btn.className="btn btn-outline"; btn.style.cssText="font-size:11px;padding:4px 10px"; btn.textContent="Avançar →";
+      btn.addEventListener("click",()=>{const idx=DOC_STATES.indexOf(ft.docs[doc]);ft.docs[doc]=DOC_STATES[(idx+1)%DOC_STATES.length];saveToSupabase();renderContratos();});
+      tr.querySelector("td:last-child").appendChild(btn); tbody.appendChild(tr);
+    });
+    table.appendChild(tbody); wrap.appendChild(table); container.appendChild(wrap);
+  });
+}
+
+// ─── ANCORD ────────────────────────────────────────────────────
+function renderAncord(){
+  const assessores=pessoas.filter(p=>p.ativo&&p.perfil==="assessor");
+  const container=document.getElementById("ancordContent");
+  if(!assessores.length){container.innerHTML=`<div class="empty">Nenhum assessor comercial ativo.</div>`;return;}
+  container.innerHTML="";
+  assessores.forEach(p=>{
+    ["ancord","xp"].forEach(fid=>{
+      const fDef=FRENTES_DEF.assessor.find(f=>f.id===fid),ft=p.tasks[fid];
+      const fc=fid==="ancord"?{hdr:"#D6E8F7",txt:"#1A5FA8"}:{hdr:"#EDE9FF",txt:"#5B3FA6"};
+      const wrap=document.createElement("div"); wrap.style.cssText="background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:16px";
+      const hdr=document.createElement("div"); hdr.style.cssText="display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--bg);border-bottom:1px solid var(--line)";
+      hdr.innerHTML=`<div class="avatar av-assessor" style="width:30px;height:30px;font-size:11px">${initials(p.nome)}</div><strong style="font-size:14px">${p.nome}</strong><span style="background:${fc.hdr};color:${fc.txt};font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px">${fDef.label}</span>${ft.locked?`<span style="background:var(--bg);color:var(--muted);font-size:11px;padding:3px 8px;border-radius:99px;border:1px solid var(--line)">🔒 Bloqueado</span>`:""}`;
+      wrap.appendChild(hdr);
+      if(ft.locked){const msg=document.createElement("div");msg.style.cssText="padding:14px 16px;font-size:13px;color:var(--muted)";msg.textContent=fDef.lockMsg;wrap.appendChild(msg);}
+      else{
+        const table=document.createElement("table");table.style.cssText="width:100%;border-collapse:collapse;font-size:13px";
+        table.innerHTML=`<thead><tr style="background:var(--bg)"><th style="text-align:left;padding:8px 16px;font-size:11px;font-weight:600;color:var(--muted);border-bottom:1px solid var(--line)">ETAPA</th><th style="text-align:center;padding:8px 16px;font-size:11px;font-weight:600;color:var(--muted);border-bottom:1px solid var(--line);width:160px">STATUS</th><th style="text-align:center;padding:8px 16px;font-size:11px;font-weight:600;color:var(--muted);border-bottom:1px solid var(--line);width:120px">AÇÃO</th></tr></thead>`;
+        const tbody=document.createElement("tbody");
+        fDef.items.forEach(task=>{
+          const done=ft.done[task];
+          const tr=document.createElement("tr");tr.style.borderBottom="1px solid var(--line)";
+          tr.innerHTML=`<td style="padding:10px 16px;color:${done?"var(--muted)":"var(--ink)"};${done?"text-decoration:line-through":""}">${task}</td><td style="padding:10px 16px;text-align:center"><span style="background:${done?"#E6F7F2":"#FDECEA"};color:${done?"#1A9E6E":"#C0392B"};font-size:11px;font-weight:500;padding:3px 10px;border-radius:99px">${done?"Concluído":"Pendente"}</span></td><td style="padding:10px 16px;text-align:center"></td>`;
+          const btn=document.createElement("button");btn.className="btn btn-outline";btn.style.cssText="font-size:11px;padding:4px 10px";btn.textContent=done?"Desfazer":"Concluir";
+          btn.addEventListener("click",()=>{ft.done[task]=!ft.done[task];saveToSupabase();renderAncord();});
+          tr.querySelector("td:last-child").appendChild(btn);tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);wrap.appendChild(table);
+      }
+      container.appendChild(wrap);
+    });
+  });
+}
+
+// ─── MODAL ─────────────────────────────────────────────────────
+function openAdd(){
+  document.getElementById("fNome").value="";
+  document.getElementById("fPerfil").value="assessor";
+  document.getElementById("fData").value=new Date().toISOString().slice(0,10);
+  document.getElementById("fObs").value="";
+  document.getElementById("addModal").classList.add("open");
+  setTimeout(()=>document.getElementById("fNome").focus(),100);
+}
+function closeAdd(){document.getElementById("addModal").classList.remove("open");}
+document.getElementById("addModal").addEventListener("click",function(e){if(e.target===this)closeAdd();});
+document.getElementById("loginPwd").addEventListener("keydown",e=>{if(e.key==="Enter")doLogin();});
+
+function addPerson(){
+  const nome=document.getElementById("fNome").value.trim();
+  if(!nome){alert("Informe o nome.");return;}
+  const perfil=document.getElementById("fPerfil").value;
+  const entrada=document.getElementById("fData").value;
+  const obs=document.getElementById("fObs").value.trim();
+  pessoas.unshift({id:nextId++,nome,perfil,entrada,ativo:true,obs,tasks:makeTasks(perfil)});
+  saveToSupabase();closeAdd();renderProfissionais();
+  showToast("Profissional adicionado!");
+}
+</script>
+</body>
+</html>
